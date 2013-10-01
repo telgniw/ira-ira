@@ -21,20 +21,17 @@ def bgr2hsv(bgr_array):
 
 def mappings(img, rect_points):
     h, w, _ = img.shape
-    mx = numpy.zeros((h, w), dtype=numpy.float32)
-    my = numpy.zeros((h, w), dtype=numpy.float32)
-
     ul, ur, br, bl = rect_points
-    value = lambda i, j, k: (
-        (ul[k] * (w - j) + ur[k] * j) * (h - i) + \
-        (bl[k] * (w - j) + br[k] * j) * i
-    ) / (h * w)
-    for i in range(h):
-        for j in range(w):
-            mx[i][j] = value(i, j, 1)
-            my[i][j] = value(i, j, 0)
+
+    grid_x, grid_y = numpy.mgrid[0:h, 0:w].astype(numpy.float32)
+    grid_xr, grid_yr = numpy.flipud(grid_x), numpy.fliplr(grid_y)
+
+    mx = ((ul[1] * grid_yr + ur[1] * grid_y) * grid_xr + \
+        (bl[1] * grid_yr + br[1] * grid_y) * grid_x) / (h * w)
+    my = ((ul[0] * grid_yr + ur[0] * grid_y) * grid_xr + \
+        (bl[0] * grid_yr + br[0] * grid_y) * grid_x) / (h * w)
 
     return mx, my
 
-def remap(img, mx, my):
+def remap(img, mx, my=None):
     return cv2.remap(img, mx, my, cv2.INTER_LINEAR)
