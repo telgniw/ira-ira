@@ -26,10 +26,10 @@ def mappings(img, rect_points):
     grid_x, grid_y = numpy.mgrid[0:h, 0:w].astype(numpy.float32)
     grid_xr, grid_yr = numpy.flipud(grid_x), numpy.fliplr(grid_y)
 
-    mx = ((ul[1] * grid_yr + ur[1] * grid_y) * grid_xr + \
-        (bl[1] * grid_yr + br[1] * grid_y) * grid_x) / (h * w)
-    my = ((ul[0] * grid_yr + ur[0] * grid_y) * grid_xr + \
+    mx = ((ul[0] * grid_yr + ur[0] * grid_y) * grid_xr + \
         (bl[0] * grid_yr + br[0] * grid_y) * grid_x) / (h * w)
+    my = ((ul[1] * grid_yr + ur[1] * grid_y) * grid_xr + \
+        (bl[1] * grid_yr + br[1] * grid_y) * grid_x) / (h * w)
 
     return mx, my
 
