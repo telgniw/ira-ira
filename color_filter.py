@@ -11,9 +11,13 @@ class ColorFilter(object):
         hsv_img = bgr2hsv(img)
 
         mask = cv2.inRange(hsv_img, self.lower_color, self.upper_color)
-        mask = blur(mask)
-        _, mask = cv2.threshold(mask, 2, 255, cv2.THRESH_BINARY)
-        return blur(mask)
+
+        # blurring and thresholding twice
+        for i in range(2):
+            mask = blur(mask)
+            _, mask = cv2.threshold(mask, 2, 255, cv2.THRESH_BINARY)
+
+        return mask
 
     @staticmethod
     def get_range(colors):
