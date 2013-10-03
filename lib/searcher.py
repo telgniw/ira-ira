@@ -8,14 +8,7 @@ class Searcher(object):
 
 class BFSearcher(Searcher):
     def search(self, img, start_point):
-        if len(img.shape) == 2:
-            h, w = img.shape
-        else:
-            h, w, d = img.shape
-
-            if d is 3:
-                img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
+        h, w = img.shape
         img = numpy.copy(img)
 
         def check(y, x):
@@ -41,8 +34,26 @@ class BFSearcher(Searcher):
 
         return res_point
 
+class MeanSearcher(Searcher):
+    def search(self, img, start_point):
+        h, w = img.shape
+        img = numpy.copy(img) / numpy.max(img)
+
+        grid_x, grid_y = numpy.mgrid[0:h, 0:w]
+
+        n_non_zeros = numpy.sum(img)
+        mean_x = int(numpy.sum(numpy.multiply(img, grid_x)) / n_non_zeros)
+        mean_y = int(numpy.sum(numpy.multiply(img, grid_y)) / n_non_zeros)
+        res_point = (mean_y, mean_x)
+
+        a, b = numpy.array(start_point), numpy.array(res_point)
+        if numpy.linalg.norm(b - a) > 50:
+            return start_point
+
+        return res_point
+
 class FastSearcher(Searcher):
-    def __init__(self, searcher=BFSearcher()):
+    def __init__(self, searcher=MeanSearcher()):
         self.previous_img, self.previous_point = None, None
         self.searcher = searcher
 
