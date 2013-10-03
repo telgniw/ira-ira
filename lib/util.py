@@ -17,7 +17,7 @@ def bgr2hsv(bgr_array):
     if is_image:
         return hsv_array
 
-    return tuple(hsv_array[0][0])
+    return tuple(map(int, hsv_array[0][0]))
 
 def mappings(img, rect_points):
     h, w, _ = img.shape

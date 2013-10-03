@@ -22,6 +22,9 @@ class ColorFilter(object):
     @staticmethod
     def get_range(colors):
         hsv_colors = map(bgr2hsv, colors)
+        if len(hsv_colors) < 2:
+            return (hsv_colors[0], hsv_colors[0])
+
         lower_color = tuple(map(int, map(min, *hsv_colors)))
         upper_color = tuple(map(int, map(max, *hsv_colors)))
         return (lower_color, upper_color)
