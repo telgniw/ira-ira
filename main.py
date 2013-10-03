@@ -76,6 +76,9 @@ class Main(object):
             return
 
         self.start_points = AreaSelectionUI(frame).get_selections(2)
+        if self.start_points is None:
+            return
+
         self.start_points = map(lambda p: (0, p[1]), self.start_points)
 
     def skip_frames(self, n_frames):
