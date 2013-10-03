@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import cv2, numpy
 
-def blur(img):
-    return cv2.GaussianBlur(img, (5, 5), 0)
+def blur(img, s=5):
+    return cv2.GaussianBlur(img, (s, s), 0)
 
 def bgr2hsv(bgr_array):
     is_image = True
@@ -19,8 +19,8 @@ def bgr2hsv(bgr_array):
 
     return tuple(map(int, hsv_array[0][0]))
 
-def mappings(img, rect_points):
-    h, w, _ = img.shape
+def mappings(img_shape, rect_points):
+    h, w = img_shape[:2]
     ul, ur, br, bl = rect_points
 
     grid_x, grid_y = numpy.mgrid[0:h, 0:w].astype(numpy.float32)

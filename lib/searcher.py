@@ -8,18 +8,20 @@ class Searcher(object):
 
 class BFSearcher(Searcher):
     def search(self, img, start_point):
-        h, w, d = img.shape
+        if len(img.shape) == 2:
+            h, w = img.shape
+        else:
+            h, w, d = img.shape
 
-        if d is 3:
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            if d is 3:
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
         img = numpy.copy(img)
-        res = numpy.zeros((h, w, 3), dtype=numpy.uint8)
 
         def check(y, x):
             return 0 <= x < h and 0 <= y < w and img[x][y] > 0
 
-        queue = [start_point]
+        res_point, queue = start_point, [start_point]
         while len(queue) > 0:
             y, x = queue.pop(0)
 
@@ -35,12 +37,12 @@ class BFSearcher(Searcher):
             if check(y-1, x):
                 queue.append((y-1, x))
 
-            img[x][y], res[x][y] = 0, (204, 204, 255)
+            res_point, img[x][y] = (y, x), 0
 
-        return res, (y, x)
+        return res_point
 
 class FastSearcher(Searcher):
-    def __init__(self, searcher):
+    def __init__(self, searcher=BFSearcher()):
         self.previous_img, self.previous_point = None, None
         self.searcher = searcher
 
@@ -55,6 +57,6 @@ class FastSearcher(Searcher):
             diff = (img - p_img).clip(min=0)
             start_point = self.previous_point
 
-        res, end_point = self.searcher.search(diff, start_point)
+        end_point = self.searcher.search(diff, start_point)
         self.previous_img, self.previous_point = numpy.copy(img), end_point
-        return res, end_point
+        return end_point

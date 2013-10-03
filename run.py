@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import cmd
+import cmd, os
 from main import Main
 
 class Cmd(cmd.Cmd):
@@ -13,9 +13,12 @@ class Cmd(cmd.Cmd):
         try:
             video = int(video)
         except ValueError:
-            pass
+            video = os.path.abspath(video)
 
         main.open_video(video)
+
+    def do_start(self, _):
+        main.game_start()
 
     def do_set(self, what):
         if what == 'area':
@@ -24,6 +27,15 @@ class Cmd(cmd.Cmd):
             main.set_color()
         elif what == 'start':
             main.set_start()
+        else:
+            print 'invalid argument'
+
+    def do_skip(self, n_frames):
+        try:
+            n_frames = int(n_frames)
+            main.skip_frames(n_frames)
+        except ValueError:
+            print 'invalid argument'
 
 if __name__ == '__main__':
     global main
