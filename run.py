@@ -17,8 +17,13 @@ class Cmd(cmd.Cmd):
 
         main.open_video(video)
 
-    def do_set_area(self, _):
-        main.set_area()
+    def do_set(self, what):
+        if what == 'area':
+            main.set_area()
+        elif what == 'color':
+            main.set_color()
+        elif what == 'start':
+            main.set_start()
 
 if __name__ == '__main__':
     global main

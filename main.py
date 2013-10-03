@@ -6,29 +6,52 @@ class Main(object):
     def __init__(self):
         self.rect_points = self.video = None
 
+    def _get_video_frame(self):
+        if self.video is None:
+            return None
+
+        ret, frame = self.video.read()
+        if not ret:
+            return None
+
+        return frame
+
     def open_video(self, video):
         self.video = cv2.VideoCapture(video)
 
     def set_area(self):
-        if self.video is None:
-            return
-
-        ret, frame = self.video.read()
-        if not ret:
+        frame = self._get_video_frame()
+        if frame is None:
             return
 
         self.rect_points = AreaSelectionUI(frame).get_selections()
-        return self.rect_points
 
-class AreaSelectionUI(MouseHandler):
-    def __init__(self, frame):
-        self.frame = frame
+    def set_color(self):
+        frame = self._get_video_frame()
+        if frame is None:
+            return
 
-        self.click = self.window = None
+        self.filter_colors = ColorSelectionUI(frame).get_selections()
 
+    def set_start(self):
+        frame = self._get_video_frame()
+        if frame is None:
+            return
+
+        self.start_point = AreaSelectionUI(frame).get_selections(1)[0]
+
+class MouseSelectionUI(MouseHandler):
     def _draw_circle(self, img, center, color):
         cv2.circle(img, center, 3, color, thickness=2)
         self.window.draw(img)
+
+    def get_selections(self):
+        raise NotImplementedError
+
+class AreaSelectionUI(MouseSelectionUI):
+    def __init__(self, frame):
+        self.frame = frame
+        self.click = self.window = None
 
     def handle(self, event, x, y, flag, param):
         if event == cv2.EVENT_LBUTTONUP:
@@ -66,4 +89,17 @@ class AreaSelectionUI(MouseHandler):
                 selections.append(click)
 
         self.window.close()
+
+        # print result and return
+        print 'points selected:', selections
         return selections
+
+class ColorSelectionUI(MouseSelectionUI):
+    def handle(self, event, x, y, flag, param):
+        if event == cv2.EVENT_LBUTTONUP:
+            self.click = (x, y)
+            #TODO
+
+    def get_selections(self):
+        # TODO
+        pass
