@@ -34,40 +34,33 @@ class BFSearcher(Searcher):
 
         return res_point
 
-class MeanSearcher(Searcher):
-    def search(self, img, start_point):
-        h, w = img.shape
-        img = numpy.copy(img) / numpy.max(img)
-
-        grid_x, grid_y = numpy.mgrid[0:h, 0:w]
-
-        n_non_zeros = numpy.sum(img)
-        mean_x = int(numpy.sum(numpy.multiply(img, grid_x)) / n_non_zeros)
-        mean_y = int(numpy.sum(numpy.multiply(img, grid_y)) / n_non_zeros)
-        res_point = (mean_y, mean_x)
-
-        a, b = numpy.array(start_point), numpy.array(res_point)
-        if numpy.linalg.norm(b - a) > 50:
-            return start_point
-
-        return res_point
-
 class FastSearcher(Searcher):
+    N_HISTORY       = 20
+    ERR_THRESHOLD   = 50
+
     def __init__(self, searcher=BFSearcher()):
-        self.previous_img, self.previous_point = None, None
-        self.searcher = searcher
+        self.history, self.searcher = [], searcher
 
     def search(self, img, start_point):
-        # set negative values to 0
-        if self.previous_img is None:
+        if len(self.history) < FastSearcher.N_HISTORY:
             diff = img
         else:
-            p_img = blur(self.previous_img)
-            _, p_img = cv2.threshold(p_img, 2, 255, cv2.THRESH_BINARY)
+            p_img, p_point = self.history.pop(0)
 
             diff = (img - p_img).clip(min=0)
-            start_point = self.previous_point
+
+            if p_img[p_point[1]][p_point[0]] > 0:
+                cv2.circle(diff, p_point, 3, (255, 255, 255), thickness=-1)
+
+            start_point = p_point
 
         end_point = self.searcher.search(diff, start_point)
-        self.previous_img, self.previous_point = numpy.copy(img), end_point
+
+        if len(self.history) > 0:
+            _, last_point = self.history[-1]
+            diff_vec = numpy.array(end_point) - numpy.array(last_point)
+            if numpy.linalg.norm(diff_vec) > FastSearcher.ERR_THRESHOLD:
+                end_point = last_point
+
+        self.history.append((numpy.copy(img), end_point))
         return end_point

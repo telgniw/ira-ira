@@ -4,7 +4,7 @@ import cv2
 class Window(object):
     def __init__(self, name):
         self.name = name
-        self.fps, self.size = 30.0, None
+        self.fps, self.size = 15.0, None
 
         cv2.namedWindow(self.name)
 
