@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import cv2, numpy
+import cv, cv2, numpy
 
 def blur(img, s=5):
     return cv2.GaussianBlur(img, (s, s), 0)
@@ -21,6 +21,7 @@ def bgr2hsv(bgr_array):
 
 def mappings(img_shape, rect_points):
     h, w = img_shape[:2]
+    print rect_points
     ul, ur, br, bl = rect_points
 
     grid_x, grid_y = numpy.mgrid[0:h, 0:w].astype(numpy.float32)
@@ -34,4 +35,6 @@ def mappings(img_shape, rect_points):
     return mx, my
 
 def remap(img, mx, my=None):
-    return cv2.remap(img, mx, my, cv2.INTER_LINEAR)
+#    cv.Remap(img, t, mx, my, cv2.INTER_LINEAR)
+#    crop_img = img[0:0, 500:500]
+    return img
