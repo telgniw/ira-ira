@@ -24,14 +24,10 @@ class Game(object):
 
         map_x, map_y = mappings((h, w), self.rect_points)
         cfilter = ColorFilter(self.color_range)
-        searchers = []
-        for i, _ in enumerate(self.start_points):
-            searchers.append(CheatSearcher(
-                self.check_points[i]
-            ))
-            #searchers.append(FastSearcher())
+        searcher = CheatSearcher(self.check_points[0])
 
         colors = [(0, 255, 0), (255, 255, 0)]
+        index = 0
         while True:
             key = window.wait()
 
@@ -45,9 +41,8 @@ class Game(object):
             img = remap(frame, map_x, map_y)
             mask = cfilter.get_mask(img)
 
-            for i, start_point in enumerate(self.start_points):
-                (x, y) = searchers[i].search(mask, start_point)
-                cv2.circle(img, (x, y), 3, colors[i], thickness=2)
+            index, (x, y) = searcher.search(mask, index)
+            cv2.circle(img, (x, y), 3, colors[0], thickness=2)
 
             mask_window.draw(mask)
             window.draw(img)

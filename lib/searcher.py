@@ -38,14 +38,16 @@ class CheatSearcher(Searcher):
     def __init__(self, check_points):
         self.check_points = check_points
 
-    def search(self, img, start_point=None):
-        end_point = start_point
-        for (y, x) in self.check_points:
+    def search(self, img, index=0):
+        for i, (y, x) in enumerate(self.check_points):
+            if i <= index:
+                continue
             if img[x][y] <= 0:
                 break
             end_point = (y, x)
+            index = i
 
-        return end_point
+        return index, self.check_points[index]
 
 class FastSearcher(Searcher):
     N_HISTORY       = 30
