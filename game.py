@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import cv, cv2, numpy
 from lib.color_filter import ColorFilter
-from lib.searcher import FastSearcher
+from lib.searcher import BFSearcher
 from lib.util import mappings, remap
 from lib.window import Window
 
@@ -24,7 +24,7 @@ class Game(object):
         cfilter = ColorFilter(self.color_range)
         searchers = []
         for _ in self.start_points:
-            searchers.append(FastSearcher())
+            searchers.append(BFSearcher())
 
         colors = [(0, 255, 0), (255, 255, 0)]
 
