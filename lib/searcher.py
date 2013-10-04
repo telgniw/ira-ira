@@ -53,7 +53,7 @@ class MeanSearcher(Searcher):
         return res_point
 
 class FastSearcher(Searcher):
-    def __init__(self, searcher=MeanSearcher()):
+    def __init__(self, searcher=BFSearcher()):
         self.previous_img, self.previous_point = None, None
         self.searcher = searcher
 

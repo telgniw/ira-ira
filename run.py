@@ -9,6 +9,12 @@ class Cmd(cmd.Cmd):
     def do_exit(self, _):
         return True
 
+    def do_export(self, filename):
+        main.export(filename)
+
+    def do_import(self, filename):
+        main.load(filename)
+
     def do_open(self, video):
         try:
             video = int(video)
