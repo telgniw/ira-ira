@@ -95,11 +95,13 @@ class AreaSelectionUI(PointSelectionUI):
 
 class ColorSelectionUI(MouseSelectionUI):
     def _get_color_range(self, selections):
-        colors = [
-            tuple(map(int, self.original_frame[x][y]))
-            for (y, x) in selections
-        ]
-        return ColorFilter.get_range(colors)
+        if selections:
+          colors = [
+              tuple(map(int, self.original_frame[x][y]))
+              for (y, x) in selections
+          ]
+          return ColorFilter.get_range(colors)
+        return None
 
     def _on_mouse(self, click):
         tmp = numpy.copy(self.frame)
