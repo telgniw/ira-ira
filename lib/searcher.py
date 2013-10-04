@@ -3,7 +3,7 @@ import cv2, numpy
 from util import blur
 
 class Searcher(object):
-    def search(self, img, start_point):
+    def search(self, img, start_point=None):
         raise NotImplementedError
 
 class BFSearcher(Searcher):
@@ -34,14 +34,27 @@ class BFSearcher(Searcher):
 
         return res_point
 
+class CheatSearcher(Searcher):
+    def __init__(self, check_points):
+        self.check_points = check_points
+
+    def search(self, img, start_point=None):
+        end_point = start_point
+        for (y, x) in self.check_points:
+            if img[x][y] <= 0:
+                break
+            end_point = (y, x)
+
+        return end_point
+
 class FastSearcher(Searcher):
-    N_HISTORY       = 20
+    N_HISTORY       = 30
     ERR_THRESHOLD   = 50
 
     def __init__(self, searcher=BFSearcher()):
         self.history, self.searcher = [], searcher
 
-    def search(self, img, start_point):
+    def search(self, img, start_point=None):
         if len(self.history) < FastSearcher.N_HISTORY:
             diff = img
         else:

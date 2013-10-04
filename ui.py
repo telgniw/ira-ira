@@ -4,85 +4,113 @@ from lib.color_filter import ColorFilter
 from lib.window import *
 
 class MouseSelectionUI(MouseHandler):
-    def _draw_circle(self, img, center, color):
-        cv2.circle(img, center, 3, color, thickness=2)
-        self.window.draw(img)
+    def __init__(self, frame):
+        self.frame = numpy.copy(frame)
+        self.click = None
 
-    def get_selections(self):
+    def _on_mouse(self, click):
         raise NotImplementedError
 
-class AreaSelectionUI(MouseSelectionUI):
-    def __init__(self, frame):
-        self.frame = frame
-        self.click = self.window = None
+    def _pre_selections(self):
+        raise NotImplementedError
 
-    def handle(self, event, x, y, flag, param):
-        if event == cv2.EVENT_LBUTTONUP:
-            self.click = (x, y)
+    def _print_instructions(self):
+        raise NotImplementedError
 
-            tmp = numpy.copy(self.frame)
-            self._draw_circle(tmp, self.click, (255, 0, 255))
+    def _post_selections(self, selections):
+        raise NotImplementedError
 
-    def get_selections(self, n_selections=4):
-        self.window = Window('Select Points')
-        self.window.draw(self.frame)
-        self.window.set_mouse_handler(self)
+    def _process(self, click):
+        raise NotImplementedError
 
-        # print instructions
+    def get_selections(self, n_selections=None):
+        self._pre_selections()
+
+        print
         print 'click by mouse to make selection'
-        print 'select in clockwise order starting from the upper-left corner'
         print 'press Y to confirm the selection on screen'
+        print 'press S to complete the selection process'
         print 'press Q to cancel the whole selection process'
+        print
 
+        self._print_instructions()
+        print
+
+        key_cmp = lambda k, c: k is ord(c.upper()) or k is ord(c.lower())
         selections = []
-        while len(selections) < n_selections:
+        while n_selections is None or len(selections) < n_selections:
             key = self.window.wait()
 
-            if key is ord('Q') or key is ord('q'):
-                selections = None
+            if key_cmp(key, 's'):
+                break
+            if key_cmp(key, 'q'):
+                selections = []
                 break
 
             if self.click is None:
                 continue
-
-            if key is ord('Y') or key is ord('y'):
+            if key_cmp(key, 'y'):
                 click, self.click = self.click, None
-
-                self._draw_circle(self.frame, click, (0, 255, 0))
                 selections.append(click)
 
+                self._process(click)
+
+        if len(selections) == 0:
+            selections = None
+
+        return self._post_selections(selections)
+
+    def handle(self, event, x, y, flag, param):
+        if event == cv2.EVENT_LBUTTONDOWN:
+            self.click = (x, y)
+            self._on_mouse(self.click)
+
+class PointSelectionUI(MouseSelectionUI):
+    def _on_mouse(self, click):
+        tmp = numpy.copy(self.frame)
+        cv2.circle(tmp, click, 3, (255, 0, 255), thickness=2)
+        self.window.draw(tmp)
+
+    def _pre_selections(self):
+        self.window = Window('Select Points')
+        self.window.draw(self.frame)
+        self.window.set_mouse_handler(self)
+
+    def _print_instructions(self):
+        pass
+
+    def _post_selections(self, selections):
         self.window.close()
 
-        # print result and return
         print 'points selected:', selections
         return selections
 
-class ColorSelectionUI(MouseSelectionUI):
-    def __init__(self, frame):
-        self.original_frame, self.frame = numpy.copy(frame), frame
-        self.click = self.preview_window = self.window = None
+    def _process(self, click):
+        cv2.circle(self.frame, click, 3, (0, 255, 0), thickness=2)
+        self.window.draw(self.frame)
 
-    def _draw_preview(self, selections):
-        color_range = ColorFilter.get_range(selections)
+class AreaSelectionUI(PointSelectionUI):
+    def _print_instructions(self):
+        print 'select in clock-wise order starting from the upper-left corner'
+
+class ColorSelectionUI(MouseSelectionUI):
+    def _get_color_range(self, selections):
+        colors = [
+            tuple(map(int, self.original_frame[x][y]))
+            for (y, x) in selections
+        ]
+        return ColorFilter.get_range(colors)
+
+    def _on_mouse(self, click):
+        tmp = numpy.copy(self.frame)
+        cv2.circle(tmp, click, 3, (255, 0, 255), thickness=2)
+        self.window.draw(tmp)
+
+        color_range = self._get_color_range(self.current_selections + [click])
         mask = ColorFilter(color_range).get_mask(self.original_frame)
         self.preview_window.draw(mask)
 
-    def _get_color(self, point):
-        return tuple(map(int,
-            self.original_frame[point[1]][point[0]]
-        ))
-
-    def handle(self, event, x, y, flag, param):
-        if event == cv2.EVENT_LBUTTONUP:
-            self.click = (x, y)
-
-            tmp = numpy.copy(self.frame)
-            self._draw_circle(tmp, self.click, (255, 0, 255))
-
-            color = self._get_color(self.click)
-            self._draw_preview(self.selections + [color])
-
-    def get_selections(self):
+    def _pre_selections(self):
         self.window = Window('Select Points')
         self.window.draw(self.frame)
         self.window.set_mouse_handler(self)
@@ -92,39 +120,22 @@ class ColorSelectionUI(MouseSelectionUI):
             numpy.zeros(self.frame.shape, dtype=numpy.uint8)
         )
 
-        # print instructions
-        print 'click by mouse to make selection'
-        print 'press Y to confirm the selection on screen'
-        print 'press S to complete the selection process'
-        print 'press Q to cancel the whole selection process'
+        self.original_frame = numpy.copy(self.frame)
+        self.current_selections = []
 
-        self.selections = []
-        while True:
-            key = self.window.wait()
+    def _print_instructions(self):
+        pass
 
-            if key is ord('S') or key is ord('s'):
-                break
-
-            if key is ord('Q') or key is ord('q'):
-                self.selections = None
-                break
-
-            if self.click is None:
-                continue
-
-            if key is ord('Y') or key is ord('y'):
-                click, self.click = self.click, None
-
-                self._draw_circle(self.frame, click, (0, 255, 0))
-                color = self._get_color(click)
-                self.selections.append(color)
-
-        self.preview_window.close()
+    def _post_selections(self, selections):
         self.window.close()
+        self.preview_window.close()
 
-        if self.selections is None or len(self.selections) <= 0:
-            return None
-
-        color_range = ColorFilter.get_range(self.selections)
+        color_range = self._get_color_range(selections)
         print 'hsv color range:', color_range
         return color_range
+
+    def _process(self, click):
+        self.current_selections.append(click)
+
+        cv2.circle(self.frame, click, 3, (0, 255, 0), thickness=2)
+        self.window.draw(self.frame)

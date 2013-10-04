@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 import cv, cv2, numpy
 from lib.color_filter import ColorFilter
-from lib.searcher import FastSearcher
+from lib.searcher import CheatSearcher
+#from lib.searcher import FastSearcher
 from lib.util import mappings, remap
 from lib.window import Window
 
 class Game(object):
     def __init__(self):
-        self.color_range = self.rect_points = self.start_point = None
+        self.color_range = self.rect_points = None
+        self.check_points = self.start_points = None
     
     def start(self, video):
         window = Window('Water Ira-Ira Bou')
@@ -23,8 +25,11 @@ class Game(object):
         map_x, map_y = mappings((h, w), self.rect_points)
         cfilter = ColorFilter(self.color_range)
         searchers = []
-        for _ in self.start_points:
-            searchers.append(FastSearcher())
+        for i, _ in enumerate(self.start_points):
+            searchers.append(CheatSearcher(
+                self.check_points[i]
+            ))
+            #searchers.append(FastSearcher())
 
         colors = [(0, 255, 0), (255, 255, 0)]
         while True:

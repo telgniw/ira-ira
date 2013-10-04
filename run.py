@@ -31,8 +31,10 @@ class Cmd(cmd.Cmd):
             main.set_area()
         elif what == 'color':
             main.set_color()
+        elif what == 'check':
+            main.set_check_points()
         elif what == 'start':
-            main.set_start()
+            main.set_start_points()
         else:
             print 'invalid argument'
 
