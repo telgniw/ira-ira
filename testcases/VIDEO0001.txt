@@ -27,7 +27,7 @@ tp9
 a(I0
 I280
 tp10
-aS'/Users/Celia/Documents/GitHub/ira-ira/videos/VIDEO0001.mp4'
+aS'/Users/Celia/Documents/GitHub/ira-ira/testcases/VIDEO0001.mp4'
 p11
 tp12
 .
