@@ -42,6 +42,7 @@ class Game(object):
 
             index, (x, y) = searcher.search(mask, index)
             cv2.circle(img, (x, y), 3, colors[0], thickness=2)
+            cv2.circle(img, (x, y), 10, colors[1], thickness=1)
 
             mask_window.draw(mask)
             window.draw(img)
