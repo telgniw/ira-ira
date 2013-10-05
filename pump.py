@@ -51,14 +51,26 @@ class PumpSpark:
     for kit, power in kit_powers:
       self.write(kit, 0)
 
+  def pump2_core(self, queue):
+    for q in queue:
+      self.pump_core(q[0], q[1])
+
+  # ps.pump2([([(1, 254), (4, 254)],5), ([(2, 100), (3, 100)], 10)])
+  # clean water and then bule
+  def pump2(self, queue):
+    print queue
+    t = Thread(target=self.pump2_core, args=(queue, ))
+    t.start()
+
   def pump(self, kit_powers, second):
     t = Thread(target=self.pump_core, args=(kit_powers, second))
     t.start()
 
   def play(self):
-    ps.pump([(1,254), (4,254)], 7)
-    ps.pump([(0,254), (3,254)], 0.5)
-    ps.pump([(2,120), (5,100)], 10)
+    self.pump2([
+      ([(1, 254), (4, 254)],10), 
+      ([(0, 254), (2, 254)], 1), 
+      ([(2,140), (5, 100)], 10)])
 
   def stop(self):
     self.turnOff()
