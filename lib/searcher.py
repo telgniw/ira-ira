@@ -43,10 +43,13 @@ class CheatSearcher(Searcher):
             if i <= index:
                 continue
             if img[x][y] <= 0:
-                break
-            end_point = (y, x)
-            index = i
-
+                pass
+                # break
+            else:
+                end_point = (y, x)
+                index = i
+        
+        print index, self.check_points[index]
         return index, self.check_points[index]
 
 class FastSearcher(Searcher):
