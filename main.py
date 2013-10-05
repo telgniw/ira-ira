@@ -15,10 +15,14 @@ class Main(object):
         if self.video is None:
             return None
 
-        ret, frame = self.video.read()
-        if not ret:
-            return None
+        cv2.namedWindow('tmp')
 
+        ret, frame = self.video.read()
+        while not ret:
+            ret, frame = self.video.read()
+            cv2.waitKey(100)
+
+        cv2.destroyWindow('tmp')
         if self.rect_points is None:
             return frame
 
