@@ -3,7 +3,7 @@ import cv2, pickle
 from game import Game
 from ui import *
 
-from lib.util import mappings, remap
+from lib.util import bounding_rect, crop
 
 class Main(object):
     def __init__(self):
@@ -22,8 +22,8 @@ class Main(object):
         if self.rect_points is None:
             return frame
 
-        map_x, map_y = mappings(frame.shape, self.rect_points)
-        return remap(frame, map_x, map_y)
+        rect = bounding_rect(self.rect_points)
+        return crop(frame, rect)
 
     def export(self, filename):
         with open(filename, 'w') as fout:

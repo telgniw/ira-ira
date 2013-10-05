@@ -2,8 +2,7 @@
 import cv, cv2, numpy
 from lib.color_filter import ColorFilter
 from lib.searcher import CheatSearcher
-#from lib.searcher import FastSearcher
-from lib.util import mappings, remap
+from lib.util import bounding_rect, crop
 from lib.window import Window
 
 class Game(object):
@@ -22,7 +21,7 @@ class Game(object):
         h = int(video.get(cv.CV_CAP_PROP_FRAME_HEIGHT))
         w = int(video.get(cv.CV_CAP_PROP_FRAME_WIDTH))
 
-        map_x, map_y = mappings((h, w), self.rect_points)
+        rect = bounding_rect(self.rect_points)
         cfilter = ColorFilter(self.color_range)
         searcher = CheatSearcher(self.check_points[0])
 
@@ -38,7 +37,7 @@ class Game(object):
             if not ret:
                 break
 
-            img = remap(frame, map_x, map_y)
+            img = crop(frame, rect)
             mask = cfilter.get_mask(img)
 
             index, (x, y) = searcher.search(mask, index)
