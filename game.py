@@ -4,6 +4,7 @@ from lib.color_filter import ColorFilter
 from lib.searcher import CheatSearcher
 from lib.util import bounding_rect, crop
 from lib.window import Window
+from pump import *
 
 class Game(object):
     def __init__(self):
@@ -11,6 +12,9 @@ class Game(object):
         self.check_points = self.start_points = None
     
     def start(self, video):
+        ps = PumpSpark()
+        ps.turnOn([(1, 254), (4,254)])
+        
         window = Window('Water Ira-Ira Bou')
         mask_window = Window('Mask')
 
@@ -27,6 +31,7 @@ class Game(object):
 
         colors = [(0, 255, 0), (255, 255, 0)]
         index = 0
+        start = False
         while True:
             key = window.wait()
 
@@ -47,5 +52,12 @@ class Game(object):
             mask_window.draw(mask)
             window.draw(img)
 
+            if index != 0 and start == False:
+              start = True
+              ps.turnOff(1, 4)
+              ps.pump([(0, 254), (3,254)], 0.5)
+              ps.turnOn([(2, 70), (5, 70)])
+
         mask_window.close()
         window.close()
+        ps.turnOff()

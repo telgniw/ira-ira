@@ -45,6 +45,9 @@ class Cmd(cmd.Cmd):
         except ValueError:
             print 'invalid argument'
 
+    def do_tune(self, _):
+            main.tune() 
+
 if __name__ == '__main__':
     global main
     main = Main()

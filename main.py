@@ -2,7 +2,7 @@
 import cv2, pickle
 from game import Game
 from ui import *
-
+from lib.window import Window
 from lib.util import bounding_rect, crop
 
 class Main(object):
@@ -120,3 +120,34 @@ class Main(object):
     def skip_frames(self, n_frames):
         while self._get_video_frame() is not None and n_frames > 0:
             n_frames -= 1
+
+    def tune(self):
+        tune_window = Window('Tune Window')
+        colors = [(0, 255, 0), (255, 255, 0), (0, 0, 255)]
+
+        print
+        print 'press Q to cancel the whole selection process'
+        print
+
+        while True:
+            frame = self._get_video_frame()
+
+            for p in self.rect_points:
+#                print p
+                cv2.circle(frame, p, 3, colors[0], thickness=2)
+            
+            for p in self.check_points[0]:
+#                print p
+                cv2.circle(frame, p, 3, colors[1], thickness=2)
+
+            for p in self.start_points:
+#                print p
+                cv2.circle(frame, p, 3, colors[2], thickness=2)
+
+            tune_window.draw(frame)
+
+            key_cmp = lambda k, c: k is ord(c.upper()) or k is ord(c.lower())
+            key = tune_window.wait()
+            if key_cmp(key, 'q'):
+                tune_window.close()
+                break; 
