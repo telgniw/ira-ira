@@ -8,13 +8,17 @@ from pump import *
 
 class Game(object):
     def __init__(self):
-        self.color_range = self.rect_points = None
+        self.color_range_bar = self.rect_points = None
+        self.color_range_water = None
         self.check_points = self.start_points = None
     
     def start(self, video):
         ps = PumpSpark()
-        ps.turnOn([(1, 254), (4,254)])
-        
+        ps.pump2([
+          ([(1, 254), (4, 254)], 5), 
+          ([(0, 254), (2, 254)], 1), 
+          ([(2, 80), (5, 80)], 10),
+          ([(1, 254), (4, 254)], 5)])  
         window = Window('Water Ira-Ira Bou')
         mask_window = Window('Mask')
 
@@ -26,12 +30,20 @@ class Game(object):
         w = int(video.get(cv.CV_CAP_PROP_FRAME_WIDTH))
 
         rect = bounding_rect(self.rect_points)
-        cfilter = ColorFilter(self.color_range)
-        searcher = CheatSearcher(self.check_points[0])
+        cfilter_bar = ColorFilter(self.color_range_bar)
+        cfilter_water = ColorFilter(self.color_range_water)
+        searcher_bar = CheatSearcher(self.check_points[0])
+        searcher_water = CheatSearcher(self.check_points[1])
 
         colors = [(0, 255, 0), (255, 255, 0)]
-        index = 0
+        ret, frame = video.read()
+        if not ret:
+            'frame is null'
+        
+        bar_index = 0
+        water_index = 0
         start = False
+        
         while True:
             key = window.wait()
 
@@ -42,22 +54,26 @@ class Game(object):
             if not ret:
                 break
 
-            img = crop(frame, rect)
-            mask = cfilter.get_mask(img)
+            current_img = crop(frame, rect)
 
-            index, (x, y) = searcher.search(mask, index)
-            cv2.circle(img, (x, y), 3, colors[0], thickness=2)
-            cv2.circle(img, (x, y), 10, colors[1], thickness=1)
+            mask_bar = cfilter_bar.get_mask(current_img)
+            mask_water = cfilter_water.get_mask(current_img)
 
-            mask_window.draw(mask)
-            window.draw(img)
+            bar_index, (x, y) = searcher_bar.search(mask_bar, bar_index)
+            cv2.circle(current_img, (x, y), 3, colors[0], thickness=2)
+            
+            water_index, (x, y) = searcher_water.search(mask_water, water_index)
+            cv2.circle(current_img, (x, y), 3, colors[0], thickness=2)
 
-            if index != 0 and start == False:
+            mask_window.draw(mask_water)
+            window.draw(current_img)
+            '''
+            if bar_index != 0 and start == False:
               start = True
               ps.turnOff(1, 4)
               ps.pump([(0, 254), (3,254)], 0.5)
               ps.turnOn([(2, 70), (5, 70)])
-
+            '''
         mask_window.close()
         window.close()
         ps.turnOff()

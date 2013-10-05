@@ -8,7 +8,8 @@ from lib.util import bounding_rect, crop
 class Main(object):
     def __init__(self):
         self.video_source = self.video = None
-        self.color_range = self.rect_points = None
+        self.color_range_bar = self.rect_points = None
+        self.color_range_water = None
         self.check_points = self.start_points = None
 
     def _get_video_frame(self):
@@ -32,7 +33,8 @@ class Main(object):
     def export(self, filename):
         with open(filename, 'w') as fout:
             fout.write(pickle.dumps((
-                self.color_range,
+                self.color_range_bar,
+                self.color_range_water,
                 self.rect_points,
                 self.check_points,
                 self.start_points,
@@ -44,7 +46,7 @@ class Main(object):
             print 'no video source'
             return
 
-        if self.color_range is None:
+        if self.color_range_bar is None:
             print 'no color-range selected'
             return
 
@@ -53,7 +55,8 @@ class Main(object):
             return
 
         game = Game()
-        game.color_range = self.color_range
+        game.color_range_bar = self.color_range_bar
+        game.color_range_water = self.color_range_water
         game.rect_points = self.rect_points
         game.check_points = self.check_points
         game.start_points = self.start_points
@@ -62,7 +65,8 @@ class Main(object):
     def load(self, filename):
         with open(filename, 'r') as fin:
             (
-                self.color_range,
+                self.color_range_bar,
+                self.color_range_water,
                 self.rect_points,
                 self.check_points,
                 self.start_points,
@@ -103,7 +107,8 @@ class Main(object):
             print 'no video source'
             return
 
-        self.color_range = ColorSelectionUI(frame).get_selections()
+        self.color_range_bar = ColorSelectionUI(frame).get_selections()
+        self.color_range_water = ColorSelectionUI(frame).get_selections()
 
     def set_start_points(self):
         frame = self._get_video_frame()
@@ -123,7 +128,7 @@ class Main(object):
 
     def tune(self):
         tune_window = Window('Tune Window')
-        colors = [(0, 255, 0), (255, 255, 0), (0, 0, 255)]
+        colors = [(0, 255, 0), (255, 255, 0), (255, 0, 0), (0, 0, 255)]
 
         print
         print 'press Q to cancel the whole selection process'
@@ -133,16 +138,16 @@ class Main(object):
             frame = self._get_video_frame()
 
             for p in self.rect_points:
-#                print p
                 cv2.circle(frame, p, 3, colors[0], thickness=2)
             
             for p in self.check_points[0]:
-#                print p
                 cv2.circle(frame, p, 3, colors[1], thickness=2)
 
-            for p in self.start_points:
-#                print p
+            for p in self.check_points[1]:
                 cv2.circle(frame, p, 3, colors[2], thickness=2)
+
+            for p in self.start_points:
+                cv2.circle(frame, p, 3, colors[3], thickness=2)
 
             tune_window.draw(frame)
 
