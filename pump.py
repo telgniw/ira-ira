@@ -4,6 +4,7 @@
 
 import serial
 import time
+from threading import Thread
 
 #port = '/dev/tty.usbserial-DAWR13BI'
 port = '/dev/tty.usbserial-DAWR0Y8X'
@@ -43,12 +44,16 @@ class PumpSpark:
     for kit in self.cleanKit:
       self.write(kit, 254)
 
-  def pump(self, kit_powers, second):
+  def pump_core(self, kit_powers, second):
     for kit, power in kit_powers:
       self.write(kit, power)
     time.sleep(second)
     for kit, power in kit_powers:
       self.write(kit, 0)
+
+  def pump(self, kit_powers, second):
+    t = Thread(target=self.pump_core, args=(kit_powers, second))
+    t.start()
 
   def play(self):
     ps.pump([(1,254), (4,254)], 7)
