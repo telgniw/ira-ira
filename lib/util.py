@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 import cv2, numpy
+import pyaudio  
+import wave  
 
 def blur(img, s=5):
     return cv2.GaussianBlur(img, (s, s), 0)
@@ -25,3 +27,26 @@ def bounding_rect(rect_points):
 def crop(img, rect):
     x, y, h, w = rect
     return img[y:y+w, x:x+h]
+
+def play_sound(name):
+
+    #define stream chunk   
+    chunk = 1024  
+
+    #open a wav format music  
+    f = wave.open(name,"rb")  
+    #instantiate PyAudio  
+    p = pyaudio.PyAudio()  
+    #open stream  
+    stream = p.open(format = p.get_format_from_width(f.getsampwidth()),  
+                    channels = f.getnchannels(),  
+                    rate = f.getframerate(),  
+                    output = True)  
+    #read data  
+    data = f.readframes(chunk)  
+
+    #paly stream  
+    while data != '':  
+        stream.write(data)  
+        data = f.readframes(chunk)  
+
