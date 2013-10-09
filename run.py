@@ -31,8 +31,16 @@ class Cmd(cmd.Cmd):
             main.set_area()
         elif what == 'color':
             main.set_color()
+        elif what == 'colorbar':
+            main.set_color(kind='bar')
+        elif what == 'colorwater':
+            main.set_color(kind='water')
         elif what == 'check':
             main.set_check_points()
+        elif what == 'checkbar':
+            main.set_check_points(kind='bar')
+        elif what == 'checkwater':
+            main.set_check_points(kind='water')
         elif what == 'start':
             main.set_start_points()
         else:

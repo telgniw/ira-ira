@@ -104,12 +104,11 @@ class Main(object):
             print 'select for the pipe'
             self.check_points[1] = PointSelectionUI(frame).get_selections()
 
-    def set_check_bar_points(self):
+    def checkbar(self):
         self.set_check_points(kind = 'bar')
 
-    def set_check_water_points(self):
+    def checkwater(self):
         self.set_check_points(kind = 'water')
-
 
     def set_color(self, kind='both'):
         frame = self._get_video_frame()
@@ -122,12 +121,6 @@ class Main(object):
 
         if kind == 'both' or kind == 'water':
             self.color_range_water = ColorSelectionUI(frame).get_selections()
-
-    def set_color_bar(self):
-        self.set_color(kind = 'bar')
-
-    def set_color_water(self):
-        self.set_color(kind = 'water')
 
     def set_start_points(self):
         frame = self._get_video_frame()
