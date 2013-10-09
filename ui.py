@@ -55,6 +55,12 @@ class MouseSelectionUI(MouseHandler):
 
                 self._process(click)
 
+            if key_cmp(key, 'x'):
+                selections = self.check_points
+                self.check_points = []
+                print selections
+                break
+
         if len(selections) == 0:
             selections = None
 
@@ -66,6 +72,13 @@ class MouseSelectionUI(MouseHandler):
             self._on_mouse(self.click)
 
 class PointSelectionUI(MouseSelectionUI):
+
+    def __init__(self, frame):
+        self.frame = numpy.copy(frame)
+        self.click = None
+        self.drawing = False
+        self.check_points = []
+
     def _on_mouse(self, click):
         tmp = numpy.copy(self.frame)
         cv2.circle(tmp, click, 3, (255, 0, 255), thickness=2)
@@ -88,6 +101,18 @@ class PointSelectionUI(MouseSelectionUI):
     def _process(self, click):
         cv2.circle(self.frame, click, 3, (0, 255, 0), thickness=2)
         self.window.draw(self.frame)
+        self.check_points.append(click)
+
+    def handle(self, event, x, y, flag, param):
+        if event == cv2.EVENT_LBUTTONDOWN:
+            self.drawing = True
+        elif event == cv2.EVENT_MOUSEMOVE and self.drawing == True:
+            self.click = (x, y)
+            self._on_mouse(self.click)
+            self._process(self.click)
+        elif event == cv2.EVENT_LBUTTONUP:
+            self.drawing = False
+
 
 class AreaSelectionUI(PointSelectionUI):
     def _print_instructions(self):

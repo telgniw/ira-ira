@@ -87,28 +87,47 @@ class Main(object):
 
         self.rect_points = AreaSelectionUI(frame).get_selections(4)
 
-    def set_check_points(self):
+    def set_check_points(self, kind='both'):
         frame = self._get_video_frame()
         if frame is None:
             print 'no video source'
             return
 
-        self.check_points = []
+        if len(self.check_points) == 0:
+            self.check_points = [None, None]
 
-        print 'select for the fist (upper) pipe'
-        self.check_points.append(PointSelectionUI(frame).get_selections())
+        if kind == 'both' or kind == 'bar':
+            print 'select for the bar'
+            self.check_points[0] = PointSelectionUI(frame).get_selections()
+        
+        if kind == 'both' or kind == 'water':
+            print 'select for the pipe'
+            self.check_points[1] = PointSelectionUI(frame).get_selections()
 
-        print 'select for the second (lower) pipe'
-        self.check_points.append(PointSelectionUI(frame).get_selections())
+    def set_check_bar_points(self):
+        self.set_check_points(kind = 'bar')
 
-    def set_color(self):
+    def set_check_water_points(self):
+        self.set_check_points(kind = 'water')
+
+
+    def set_color(self, kind='both'):
         frame = self._get_video_frame()
         if frame is None:
             print 'no video source'
             return
 
-        self.color_range_bar = ColorSelectionUI(frame).get_selections()
-        self.color_range_water = ColorSelectionUI(frame).get_selections()
+        if kind == 'both' or kind == 'bar':
+            self.color_range_bar = ColorSelectionUI(frame).get_selections()
+
+        if kind == 'both' or kind == 'water':
+            self.color_range_water = ColorSelectionUI(frame).get_selections()
+
+    def set_color_bar(self):
+        self.set_color(kind = 'bar')
+
+    def set_color_water(self):
+        self.set_color(kind = 'water')
 
     def set_start_points(self):
         frame = self._get_video_frame()
