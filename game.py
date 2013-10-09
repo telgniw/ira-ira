@@ -71,11 +71,14 @@ class Game(object):
             window.draw(current_img)
             
             if bar_index != 0 and start == False:
-              play_sound('sound/button-8.wav')
-              start = True
-              ps.turnOff(1, 4)
-              ps.pump([(0, 254), (3,254)], 0.5)
-              ps.turnOn([(2, 70), (5, 70)])
+                play_sound('sound/button-8.wav')
+                start = True
+                try:
+                    ps.turnOff(1, 4)
+                    ps.pump([(0, 254), (3,254)], 0.5)
+                    ps.turnOn([(2, 70), (5, 70)])
+                except:
+                    pass
             
         mask_window.close()
         window.close()
