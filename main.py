@@ -12,7 +12,7 @@ class Main(object):
         self.color_range_water = None
         self.check_points = self.start_points = None
 
-    def _get_video_frame(self):
+    def _get_video_frame(self, is_crop=True):
         if self.video is None:
             return None
 
@@ -24,7 +24,7 @@ class Main(object):
             cv2.waitKey(100)
 
         cv2.destroyWindow('tmp')
-        if self.rect_points is None:
+        if (self.rect_points is None) or (is_crop is False):
             return frame
 
         rect = bounding_rect(self.rect_points)
@@ -80,7 +80,7 @@ class Main(object):
         self.video = cv2.VideoCapture(self.video_source)
 
     def set_area(self):
-        frame = self._get_video_frame()
+        frame = self._get_video_frame(is_crop=False)
         if frame is None:
             print 'no video source'
             return
