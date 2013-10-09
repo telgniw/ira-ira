@@ -98,11 +98,11 @@ class Main(object):
 
         if kind == 'both' or kind == 'bar':
             print 'select for the bar'
-            self.check_points[0] = PointSelectionUI(frame).get_selections()
+            self.check_points[0] = CheckPointSelectionUI(frame).get_selections()
         
         if kind == 'both' or kind == 'water':
             print 'select for the pipe'
-            self.check_points[1] = PointSelectionUI(frame).get_selections()
+            self.check_points[1] = CheckPointSelectionUI(frame).get_selections()
 
     def checkbar(self):
         self.set_check_points(kind = 'bar')
@@ -145,6 +145,11 @@ class Main(object):
         print
         print 'press Q to cancel the whole selection process'
         print
+
+        print len(self.rect_points), self.rect_points
+        print len(self.check_points[0]), self.check_points[0]
+        print len(self.check_points[1]), self.check_points[1]
+        print len(self.start_points), self.start_points
 
         while True:
             frame = self._get_video_frame()

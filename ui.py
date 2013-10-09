@@ -71,7 +71,7 @@ class MouseSelectionUI(MouseHandler):
             self.click = (x, y)
             self._on_mouse(self.click)
 
-class PointSelectionUI(MouseSelectionUI):
+class CheckPointSelectionUI(MouseSelectionUI):
 
     def __init__(self, frame):
         self.frame = numpy.copy(frame)
@@ -113,10 +113,34 @@ class PointSelectionUI(MouseSelectionUI):
         elif event == cv2.EVENT_LBUTTONUP:
             self.drawing = False
 
+class PointSelectionUI(MouseSelectionUI):
+    def _on_mouse(self, click):
+        tmp = numpy.copy(self.frame)
+        cv2.circle(tmp, click, 3, (255, 0, 255), thickness=2)
+        self.window.draw(tmp)
+
+    def _pre_selections(self):
+        self.window = Window('Select Points')
+        self.window.draw(self.frame)
+        self.window.set_mouse_handler(self)
+
+    def _print_instructions(self):
+        pass
+
+    def _post_selections(self, selections):
+        self.window.close()
+
+        print 'points selected:', selections
+        return selections
+
+    def _process(self, click):
+        cv2.circle(self.frame, click, 3, (0, 255, 0), thickness=2)
+        self.window.draw(self.frame)
 
 class AreaSelectionUI(PointSelectionUI):
     def _print_instructions(self):
         print 'select in clock-wise order starting from the upper-left corner'
+
 
 class ColorSelectionUI(MouseSelectionUI):
     def _get_color_range(self, selections):
