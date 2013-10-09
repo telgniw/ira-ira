@@ -38,8 +38,19 @@ class CheatSearcher(Searcher):
     def __init__(self, check_points):
         self.check_points = check_points
 
+    def check(self, img, x, y, r=1):
+      for i in range(-r,r):
+        for j in range(-r,r):
+          try: 
+            if img[x+r][y+r] > 0 :
+              return True
+          except:
+            pass
+      return False
+        
+
     def search(self, img, index=0):
-        limit = 20 # for noise
+        limit = 200 # for noise
         count = 0
         for i, (y, x) in enumerate(self.check_points):
             if i <= index:
@@ -49,7 +60,7 @@ class CheatSearcher(Searcher):
             if count > limit:
                 break
 
-            if img[x][y] <= 0:
+            if self.check(img, x, y) == False:
                 pass
                 # break
             else:
