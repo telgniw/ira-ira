@@ -3,8 +3,13 @@ import cv2, numpy
 from util import blur, bgr2hsv
 
 class ColorFilter(object):
+    
     def __init__(self, color_range):
         self.lower_color, self.upper_color = color_range
+        self.lower_color = (self.lower_color[0]-15, self.lower_color[1]-15,
+            self.lower_color[2]-15)
+        self.upper_color = (self.upper_color[0]+15, self.upper_color[1]+15,
+            self.upper_color[2]+15)
 
     def get_mask(self, img):
         img = blur(img)
@@ -12,14 +17,8 @@ class ColorFilter(object):
 #        print self.lower_color, self.upper_color
         mask = cv2.inRange(hsv_img, self.lower_color, self.upper_color)
 
-        self.lower_color = (self.lower_color[0], self.lower_color[1],
-            self.lower_color[2])
-
-        self.upper_color = (self.upper_color[0], self.upper_color[1],
-            self.upper_color[2])
-
         # blurring and thresholding twice
-        for i in range(2):
+        for _ in range(2):
             mask = blur(mask)
             _, mask = cv2.threshold(mask, 2, 255, cv2.THRESH_BINARY)
 
