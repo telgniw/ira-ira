@@ -7,6 +7,7 @@ import time
 from threading import Thread
 
 #port = '/dev/tty.usbserial-DAWR13BI'
+#port = '/dev/tty.usbserial-DAWR0YB1'
 port = '/dev/tty.usbserial-DAWR0Y8X'
 
 class PumpSpark:

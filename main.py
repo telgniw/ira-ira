@@ -93,7 +93,7 @@ class Main(object):
             print 'no video source'
             return
 
-        if len(self.check_points) == 0:
+        if self.check_points == None or len(self.check_points) == 0:
             self.check_points = [None, None]
 
         if kind == 'both' or kind == 'bar':
@@ -146,25 +146,31 @@ class Main(object):
         print 'press Q to cancel the whole selection process'
         print
 
-        print len(self.rect_points), self.rect_points
-        print len(self.check_points[0]), self.check_points[0]
-        print len(self.check_points[1]), self.check_points[1]
-        print len(self.start_points), self.start_points
+        try:
+            print len(self.rect_points), self.rect_points
+            print len(self.check_points[0]), self.check_points[0]
+            print len(self.check_points[1]), self.check_points[1]
+            print len(self.start_points), self.start_points
+        except:
+            pass
 
         while True:
             frame = self._get_video_frame()
-
-            for p in self.rect_points:
-                cv2.circle(frame, p, 3, colors[0], thickness=2)
             
-            for p in self.check_points[0]:
-                cv2.circle(frame, p, 3, colors[1], thickness=2)
+            try:
+                for p in self.rect_points:
+                      cv2.circle(frame, p, 3, colors[0], thickness=2)
+                
+                for p in self.check_points[0]:
+                    cv2.circle(frame, p, 3, colors[1], thickness=2)
 
-            for p in self.check_points[1]:
-                cv2.circle(frame, p, 3, colors[2], thickness=2)
+                for p in self.check_points[1]:
+                    cv2.circle(frame, p, 3, colors[2], thickness=2)
 
-            for p in self.start_points:
-                cv2.circle(frame, p, 3, colors[3], thickness=2)
+                for p in self.start_points:
+                    cv2.circle(frame, p, 3, colors[3], thickness=2)
+            except:
+                pass
 
             tune_window.draw(frame)
 

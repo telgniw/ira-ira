@@ -5,11 +5,12 @@ from util import blur, bgr2hsv
 class ColorFilter(object):
     
     def __init__(self, color_range):
+        exp = 1
         self.lower_color, self.upper_color = color_range
-        self.lower_color = (self.lower_color[0]-15, self.lower_color[1]-15,
-            self.lower_color[2]-15)
-        self.upper_color = (self.upper_color[0]+15, self.upper_color[1]+15,
-            self.upper_color[2]+15)
+        self.lower_color = (self.lower_color[0]-exp, self.lower_color[1]-exp,
+            self.lower_color[2]-exp)
+        self.upper_color = (self.upper_color[0]+exp, self.upper_color[1]+exp,
+            self.upper_color[2]+exp)
 
     def get_mask(self, img):
         img = blur(img)

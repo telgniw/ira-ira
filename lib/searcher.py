@@ -50,7 +50,7 @@ class CheatSearcher(Searcher):
         
 
     def search(self, img, index=0):
-        limit = 200 # for noise
+        limit = 50 # for noise
         count = 0
         for i, (y, x) in enumerate(self.check_points):
             if i <= index:

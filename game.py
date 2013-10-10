@@ -14,13 +14,15 @@ class Game(object):
     
     def start(self, video):
         ps = PumpSpark()
-        '''
-        ps.pump2([
-          ([(1, 254), (4, 254)], 5), 
-          ([(0, 254), (2, 254)], 1), 
-          ([(2, 80), (5, 80)], 10),
-          ([(1, 254), (4, 254)], 5)])  
-        '''
+        
+        try:
+            ps.pump2([
+              ([(1, 254), (4, 254)], 10), 
+              ([(2, 100), (5, 100)], 12),
+              ([(1, 254), (4, 254)], 10)])  
+        except:
+           pass
+        
         window = Window('Water Ira-Ira Bou')
         mask_window = Window('Mask')
 
@@ -73,12 +75,6 @@ class Game(object):
             if bar_index != 0 and start == False:
                 play_sound('sound/button-8.wav')
                 start = True
-                try:
-                    ps.turnOff(1, 4)
-                    ps.pump([(0, 254), (3,254)], 0.5)
-                    ps.turnOn([(2, 70), (5, 70)])
-                except:
-                    pass
             
         mask_window.close()
         window.close()

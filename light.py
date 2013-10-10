@@ -4,16 +4,23 @@ from threading import Thread
 class Light():
 
   def __init__(self):
-    self.port = '/dev/tty.usbmodemfd121'
+    self.port = [
+        '/dev/tty.usbmodemfd121', 
+        '/dev/tty.usbmodemfd1211', 
+        '/dev/tty.usbmodemfa1341', 
+        '/dev/tty.usbmodemfa1311']
     self.connect()
 
   def connect(self):
-    try:
-      self.ser = serial.Serial(self.port, 9600)
-      print 'serial port connected '
-    except:
-      print 'serial port connected fail'
-      pass
+    for port in self.port:
+      try:
+        self.ser = serial.Serial(port, 9600)
+        print 'serial port connected '
+        return
+      except:
+        print 'serial port connected fail' + port
+        pass
+    print 'serial port connected fail'
 
   def on(self):
     self.ser.write('O')
